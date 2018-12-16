@@ -5,22 +5,10 @@ const log = (value) => new Promise(resolve => {
   resolve(value);
 });
 
-const sleep = () => new Promise(resolve => setTimeout(() => {
-  console.log('sleeping...');
+const sleep = (time) => new Promise(resolve => setTimeout(() => {
+  console.log(`${time} sleeping...`);
   resolve('slept');
-}, 1000));
-
-const sequenceTasks = tasks => {
-  const recordValue = (results, value) => {
-    results.push(value);
-    return results;
-  }
-  const pushValue = recordValue.bind(null, []);
-  return tasks.reduce(
-    (promise, task) => promise.then(task).then(pushValue),
-    Promise.resolve()
-  );
-};
+}, time));
 
 const request = {
   comment() {
@@ -37,12 +25,25 @@ const request = {
   }
 };
 
+const sequenceTasks = tasks => {
+  const recordValue = (results, value) => {
+    results.push(value);
+    return results;
+  };
+
+  const pushValue = recordValue.bind(null, []);
+  return tasks.reduce(
+    (promise, task) => promise.then(task.f.bind(null, task.v)).then(pushValue),
+    Promise.resolve()
+  );
+};
+
 sequenceTasks([
-  sleep,
-  request.comment,
-  sleep,
-  request.people,
-  sleep,
+  { f: sleep, v: 100 },
+  { f: request.comment, v: 0 },
+  { f: sleep, v: 500 },
+  { f: request.people, v: 0 },
+  { f: sleep, v: 1000 },
 ]).then(result => {
   console.log(result);
 }).catch(error => {

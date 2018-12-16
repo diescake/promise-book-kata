@@ -8,29 +8,19 @@ const sequenceTasks = tasks => {
     results.push(value);
     return results;
   };
+
   const pushValue = recordValue.bind(null, []);
-  return tasks.reduce((promise, task) => {
-    return promise.then(task.f.call(null, task.argv)).then(pushValue);
-  }, Promise.resolve());
+  return tasks.reduce(
+    (promise, task) => promise.then(task.f.bind(null, task.v)).then(pushValue),
+    Promise.resolve()
+  );
 };
 
 sequenceTasks([
-  {
-    f: sleep,
-    argv: 100,
-  },
-  {
-    f: sleep,
-    argv: 100,
-  },
-  {
-    f: sleep,
-    argv: 1000,
-  },
-  {
-    f: sleep,
-    argv: 10,
-  },
+  { f: sleep, v: 100 },
+  { f: sleep, v: 800 },
+  { f: sleep, v: 1000 },
+  { f: sleep, v: 10 },
 ]).then(result => {
   console.log(result);
 }).catch(error => {
