@@ -5,8 +5,8 @@ const log = (param) => new Promise(resolve => {
 });
 
 const sleep = (time) => new Promise(resolve => setTimeout(() => {
-  console.log(`${time} sleeping...`);
-  resolve('slept');
+  console.log(`sleeping ${time}ms...`);
+  resolve('waked up');
 }, time));
 
 const request = {
