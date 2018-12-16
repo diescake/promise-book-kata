@@ -1,46 +1,50 @@
 const fetch = require('node-fetch');
 
+const log = (value) => new Promise(resolve => {
+  console.log('fetching...');
+  resolve(value);
+});
+
 const sleep = () => new Promise(resolve => setTimeout(() => {
-  console.log('sleeping...')
+  console.log('sleeping...');
   resolve('slept');
 }, 1000));
 
-function sequenceTasks(tasks) {
-  function recordValue(results, value) {
+const sequenceTasks = tasks => {
+  const recordValue = (results, value) => {
     results.push(value);
     return results;
   }
-  var pushValue = recordValue.bind(null, []);
-  return tasks.reduce(function (promise, task) {
-    return promise.then(task).then(pushValue);
-  }, Promise.resolve());
-}
+  const pushValue = recordValue.bind(null, []);
+  return tasks.reduce(
+    (promise, task) => promise.then(task).then(pushValue),
+    Promise.resolve()
+  );
+};
 
-var request = {
-  comment: function getComment() {
+const request = {
+  comment() {
     return fetch('http://azu.github.io/promises-book/json/comment.json')
+    .then(log)
     .then(res => res.json())
     .then(json => json[0].name);
   },
-  people: function getPeople() {
+  people() {
     return fetch('http://azu.github.io/promises-book/json/people.json')
+    .then(log)
     .then(res => res.json())
     .then(json => json[0].name);
   }
 };
 
-function main() {
-  return sequenceTasks([
-    sleep,
-    request.comment,
-    sleep,
-    request.people,
-    sleep,
-  ]);
-}
-
-main().then(function (value) {
-  console.log(value);
-}).catch(function(error){
+sequenceTasks([
+  sleep,
+  request.comment,
+  sleep,
+  request.people,
+  sleep,
+]).then(result => {
+  console.log(result);
+}).catch(error => {
   console.error(error);
 });

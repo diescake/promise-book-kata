@@ -3,7 +3,7 @@ const sleep = (time) => new Promise(resolve => setTimeout(() => {
   resolve(time);
 }, time));
 
-const sequenceTasks = (tasks) => {
+const sequenceTasks = tasks => {
   const recordValue = (results, value) => {
     results.push(value);
     return results;
