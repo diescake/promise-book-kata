@@ -1,29 +1,4 @@
-const fetch = require('node-fetch');
-
-const log = (value) => new Promise(resolve => {
-  console.log('fetching...');
-  resolve(value);
-});
-
-const sleep = (time) => new Promise(resolve => setTimeout(() => {
-  console.log(`${time} sleeping...`);
-  resolve('slept');
-}, time));
-
-const request = {
-  comment() {
-    return fetch('http://azu.github.io/promises-book/json/comment.json')
-    .then(log)
-    .then(res => res.json())
-    .then(json => json[0].name);
-  },
-  people() {
-    return fetch('http://azu.github.io/promises-book/json/people.json')
-    .then(log)
-    .then(res => res.json())
-    .then(json => json[0].name);
-  }
-};
+const { sleep, request } = require('./myPromiseObject').default;
 
 const sequenceTasks = tasks => {
   const pushValue = ((results, value) => {
